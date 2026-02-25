@@ -7,10 +7,23 @@ from uuid import UUID
 from atomic_operator import AtomicOperator
 from atomic_operator.base import Base
 from atomic_operator.execution.runner import Runner
+from atomic_operator.atomic.atomictest import AtomicTest
 
 from atomic_red_team_mcp.utils.config import get_atomics_dir
 
 logger = logging.getLogger(__name__)
+
+# Monkey-patch AtomicTest to handle missing auto_generated_guid
+# This fixes "AtomicTest.__init__() missing 1 required positional argument: 'auto_generated_guid'"
+# when executing or evaluating custom atomic tests that don't declare a guid.
+original_atomic_test_init = AtomicTest.__init__
+
+def patched_atomic_test_init(self, *args, **kwargs):
+    if "auto_generated_guid" not in kwargs and len(args) < 4:
+        kwargs["auto_generated_guid"] = None
+    original_atomic_test_init(self, *args, **kwargs)
+
+AtomicTest.__init__ = patched_atomic_test_init
 
 
 def run_test(guid: UUID, input_arguments: dict, art_dir: str = None):
