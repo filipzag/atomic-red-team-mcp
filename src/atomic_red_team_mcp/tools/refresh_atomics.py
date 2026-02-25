@@ -3,6 +3,7 @@
 import logging
 
 from fastmcp import Context
+import anyio
 
 from atomic_red_team_mcp.services import download_atomics, load_atomics
 
@@ -66,9 +67,12 @@ async def refresh_atomics(ctx: Context) -> str:
         - Failed YAML files are logged but don't stop the overall refresh
     """
     try:
-        download_atomics(force=True)
+        def _download():
+            download_atomics(force=True)
+            
+        await anyio.to_thread.run_sync(_download)
         # Reload atomics into memory
-        atomics = load_atomics()
+        atomics = await anyio.to_thread.run_sync(load_atomics)
         ctx.request_context.lifespan_context.atomics = atomics
         logger.info(f"Successfully refreshed {len(atomics)} atomics")
         return f"Successfully refreshed {len(atomics)} atomics"

@@ -5,6 +5,7 @@ from typing import List, Optional
 
 from fastmcp import Context
 from mcp.shared.exceptions import McpError
+import anyio
 
 from atomic_red_team_mcp.models import Atomic
 from atomic_red_team_mcp.services import load_atomics, run_test
@@ -181,4 +182,6 @@ Would you like to use the default value or provide a custom value?
                     f"{matching_atomic.auto_generated_guid} - Using default value for '{key}': {default_value} (elicitation not supported)"
                 )
 
-    return run_test(matching_atomic.auto_generated_guid, input_arguments)
+    return await anyio.to_thread.run_sync(
+        run_test, matching_atomic.auto_generated_guid, input_arguments
+    )
