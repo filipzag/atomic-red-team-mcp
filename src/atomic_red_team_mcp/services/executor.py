@@ -86,6 +86,7 @@ def run_test(guid: UUID, input_arguments: dict, art_dir: str = None):
             prompt_for_input_args=False,
             atomics_path=art_dir,
             test_guids=[guid],
+            command_timeout=10,
             debug=True,
         )
 
@@ -96,6 +97,7 @@ def run_test(guid: UUID, input_arguments: dict, art_dir: str = None):
             prompt_for_input_args=False,
             atomics_path=art_dir,
             test_guids=[guid],
+            command_timeout=10,
             debug=True,
         )
 
@@ -107,6 +109,7 @@ def run_test(guid: UUID, input_arguments: dict, art_dir: str = None):
             prompt_for_input_args=False,
             atomics_path=art_dir,
             test_guids=[guid],
+            command_timeout=10,
             debug=True,
         )
 
